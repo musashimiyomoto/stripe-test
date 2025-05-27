@@ -7,7 +7,7 @@ set -o pipefail
 readonly cmd="$*"
 
 ###########################
-
+python manage.py migrate
 ###########################
 
 exec $cmd

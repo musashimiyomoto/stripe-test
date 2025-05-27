@@ -29,7 +29,7 @@ services:
         condition: service_healthy
     ports:
       - "8000:8000"
-    command: [ "bash", "/docker-entrypoint.sh", "poetry", "run", "python", "manage.py", "runserver" ]
+    command: [ "bash", "/docker-entrypoint.sh", "gunicorn", "core.wsgi:application" ]
 
 volumes:
   postgres_data:
