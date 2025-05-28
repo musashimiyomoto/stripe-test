@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Каталог товаров{% endblock %}
+{% block title %}Item List{% endblock %}
 
 {% block content %}
 <style>
@@ -23,12 +23,12 @@
 
 <div class="container">
   <div class="header">
-    <h1>Каталог товаров</h1>
-    <p>Выберите товары для покупки</p>
+    <h1>Catalog of items</h1>
+    <p>Choose items for purchase</p>
   </div>
 
   <div class="nav-links">
-    <a href="{% url 'order_list' %}">Мои заказы</a>
+    <a href="{% url 'order_list' %}">My orders</a>
   </div>
 
   {% if items %}
@@ -39,11 +39,11 @@
           <div class="item-description">{{ item.description }}</div>
           <div class="item-price">{{ item.get_display_price }}</div>
           <div class="item-actions">
-            <a href="{% url 'item_detail' item.pk %}" class="btn btn-primary">Подробнее</a>
+            <a href="{% url 'item_detail' item.pk %}" class="btn btn-primary">More</a>
             <form method="post" action="{% url 'add_to_order' item.id %}" style="display: inline;">
               {% csrf_token %}
               <input type="hidden" name="quantity" value="1">
-              <button type="submit" class="btn btn-success">В заказ</button>
+              <button type="submit" class="btn btn-success">Add to order</button>
             </form>
           </div>
         </div>
@@ -51,8 +51,8 @@
     </div>
   {% else %}
     <div class="empty-state">
-      <h3>Товары не найдены</h3>
-      <p>В каталоге пока нет товаров. Добавьте товары через админ-панель.</p>
+      <h3>Items not found</h3>
+      <p>There are no items in the catalog. Add items through the admin panel.</p>
     </div>
   {% endif %}
 </div>

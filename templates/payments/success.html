@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Оплата прошла успешно{% endblock %}
+{% block title %}Payment successful{% endblock %}
 
 {% block content %}
 <style>
@@ -14,14 +14,14 @@
 
 <div class="container">
   <div class="success-icon">✅</div>
-  <h1 class="success-message">Оплата прошла успешно!</h1>
+  <h1 class="success-message">Payment successful!</h1>
   <p class="success-description">
-    Спасибо за покупку! Ваш платеж был успешно обработан.
-    Вы получите подтверждение на указанный email.
+    Thank you for your purchase! Your payment has been successfully processed.
+    You will receive a confirmation email.
   </p>
   <div>
-    <a href="{% url 'item_list' %}" class="btn">Продолжить покупки</a>
-    <a href="{% url 'order_list' %}" class="btn">Мои заказы</a>
+    <a href="{% url 'item_list' %}" class="btn">Continue shopping</a>
+    <a href="{% url 'order_list' %}" class="btn">My orders</a>
   </div>
 </div>
 {% endblock %}

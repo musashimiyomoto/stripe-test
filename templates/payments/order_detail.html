@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Заказ #{{ order.id }}{% endblock %}
+{% block title %}Order #{{ order.id }}{% endblock %}
 
 {% block content %}
 <style>
@@ -28,37 +28,37 @@
 
 <div class="container">
   <div class="nav-links">
-    <a href="{% url 'item_list' %}">← Каталог</a>
-    <a href="{% url 'order_list' %}">Все заказы</a>
+    <a href="{% url 'item_list' %}">← Catalog</a>
+    <a href="{% url 'order_list' %}">All orders</a>
   </div>
 
   <div class="header">
-    <h1>Заказ #{{ order.id }}</h1>
-    <p>Создан: {{ order.created_at|date:"d.m.Y в H:i" }}</p>
+    <h1>Order #{{ order.id }}</h1>
+    <p>Created: {{ order.created_at|date:"d.m.Y в H:i" }}</p>
   </div>
 
   <div class="order-items">
-    <h3>Товары в заказе:</h3>
+    <h3>Items in order:</h3>
     {% for order_item in order.orderitem_set.all %}
       <div class="item-row">
         <div class="item-info">
           <div class="item-name">{{ order_item.item.name }}</div>
           <div class="item-description">{{ order_item.item.description }}</div>
         </div>
-        <div class="item-quantity">{{ order_item.quantity }} шт.</div>
+        <div class="item-quantity">{{ order_item.quantity }} pcs.</div>
         <div class="item-price">{{ order_item.get_total_price }} {{ order_item.item.currency|upper }}</div>
       </div>
     {% empty %}
-      <p>Заказ пуст</p>
+      <p>Order is empty</p>
     {% endfor %}
   </div>
 
   <div class="order-summary">
-    <h3>Итоги заказа:</h3>
+    <h3>Order summary:</h3>
     
     {% with subtotal=order.orderitem_set.all|length %}
       <div class="summary-row">
-        <span>Подытог:</span>
+        <span>Subtotal:</span>
         <span>
           {% for order_item in order.orderitem_set.all %}
             {% if forloop.first %}{{ order_item.get_total_price }}{% endif %}
@@ -73,27 +73,27 @@
 
     {% if order.discount %}
       <div class="summary-row">
-        <span>Скидка ({{ order.discount.name }}):</span>
+        <span>Discount ({{ order.discount.name }}):</span>
         <span>-{{ order.discount.percent }}%</span>
       </div>
     {% endif %}
 
     {% if order.tax %}
       <div class="summary-row">
-        <span>Налог ({{ order.tax.name }}):</span>
+        <span>Tax ({{ order.tax.name }}):</span>
         <span>+{{ order.tax.percent }}%</span>
       </div>
     {% endif %}
 
     <div class="summary-row total">
-      <span>Итого к оплате:</span>
+      <span>Total to pay:</span>
       <span>{{ order.get_total_amount }} {{ order.get_currency|upper }}</span>
     </div>
   </div>
 
   {% if order.orderitem_set.exists %}
     <div class="actions">
-      <button id="buy-order-button" class="btn btn-success">Оплатить заказ</button>
+      <button id="buy-order-button" class="btn btn-success">Pay order</button>
     </div>
   {% endif %}
 </div>
@@ -122,7 +122,7 @@
       })
       .catch(error => {
         console.error('Error:', error);
-        alert('Произошла ошибка при оформлении заказа.');
+        alert('An error occurred while placing the order.');
       });
     });
   }

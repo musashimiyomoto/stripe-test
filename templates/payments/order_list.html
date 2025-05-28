@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Мои заказы{% endblock %}
+{% block title %}My orders{% endblock %}
 
 {% block content %}
 <style>
@@ -27,12 +27,12 @@
 
 <div class="container">
   <div class="header">
-    <h1>Мои заказы</h1>
-    <p>Управляйте своими заказами</p>
+    <h1>My orders</h1>
+    <p>Manage your orders</p>
   </div>
 
   <div class="nav-links">
-    <a href="{% url 'item_list' %}">← Каталог товаров</a>
+    <a href="{% url 'item_list' %}">← Catalog of items</a>
   </div>
 
   {% if orders %}
@@ -40,37 +40,37 @@
       {% for order in orders %}
         <div class="order-card {% if order.id == request.session.order_id %}current-order{% endif %}">
           <div class="order-header">
-            <div class="order-id">Заказ #{{ order.id }}</div>
+            <div class="order-id">Order #{{ order.id }}</div>
             <div class="order-date">{{ order.created_at|date:"d.m.Y H:i" }}</div>
           </div>
           
           <div class="order-items">
-            <strong>Товары:</strong>
+            <strong>Items:</strong>
             {% for order_item in order.orderitem_set.all %}
               <div class="order-item">
                 {{ order_item.quantity }} x {{ order_item.item.name }} - {{ order_item.get_total_price }} {{ order_item.item.currency|upper }}
               </div>
             {% empty %}
-              <div class="order-item">Заказ пуст</div>
+              <div class="order-item">Order is empty</div>
             {% endfor %}
           </div>
 
           {% if order.discount %}
-            <div><strong>Скидка:</strong> {{ order.discount }}</div>
+            <div><strong>Discount:</strong> {{ order.discount }}</div>
           {% endif %}
           
           {% if order.tax %}
-            <div><strong>Налог:</strong> {{ order.tax }}</div>
+            <div><strong>Tax:</strong> {{ order.tax }}</div>
           {% endif %}
 
           <div class="order-total">
-            Итого: {{ order.get_total_amount }} {{ order.get_currency|upper }}
+            Total: {{ order.get_total_amount }} {{ order.get_currency|upper }}
           </div>
 
           <div class="order-actions">
-            <a href="{% url 'order_detail' order.pk %}" class="btn btn-primary">Подробнее</a>
+            <a href="{% url 'order_detail' order.pk %}" class="btn btn-primary">More</a>
             {% if order.orderitem_set.exists %}
-              <button onclick="buyOrder({{ order.id }})" class="btn btn-success">Оплатить заказ</button>
+              <button onclick="buyOrder({{ order.id }})" class="btn btn-success">Pay order</button>
             {% endif %}
           </div>
         </div>
@@ -78,9 +78,9 @@
     </div>
   {% else %}
     <div class="empty-state">
-      <h3>У вас пока нет заказов</h3>
-      <p>Добавьте товары в заказ из каталога</p>
-      <a href="{% url 'item_list' %}" class="btn btn-primary">Перейти к каталогу</a>
+      <h3>You have no orders yet</h3>
+      <p>Add items to the order from the catalog</p>
+      <a href="{% url 'item_list' %}" class="btn btn-primary">Go to the catalog</a>
     </div>
   {% endif %}
 </div>
@@ -96,7 +96,6 @@ function buyOrder(orderId) {
     return response.json();
   })
   .then(session => {
-    // Получаем первый товар для определения валюты и ключа Stripe
     const stripe = Stripe('{{ STRIPE_PUBLISHABLE_KEY|default:"pk_test_..." }}');
     return stripe.redirectToCheckout({ sessionId: session.id });
   })
@@ -107,7 +106,7 @@ function buyOrder(orderId) {
   })
   .catch(error => {
     console.error('Error:', error);
-    alert('Произошла ошибка при оформлении заказа.');
+    alert('An error occurred while placing the order.');
   });
 }
 </script>

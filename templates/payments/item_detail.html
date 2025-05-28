@@ -20,8 +20,8 @@
   </head>
   <body>
     <div class="nav-links">
-      <a href="{% url 'item_list' %}">← Все товары</a>
-      <a href="{% url 'order_list' %}">Мои заказы</a>
+      <a href="{% url 'item_list' %}">← All items</a>
+      <a href="{% url 'order_list' %}">My orders</a>
     </div>
 
     {% if messages %}
@@ -33,16 +33,16 @@
     <div class="item-info">
       <h1>{{ item.name }}</h1>
       <p>{{ item.description }}</p>
-      <p><strong>Цена: {{ item.get_display_price }}</strong></p>
+      <p><strong>Price: {{ item.get_display_price }}</strong></p>
     </div>
 
     <div class="buttons">
-      <button id="buy-button" class="buy-button">Купить сейчас</button>
+      <button id="buy-button" class="buy-button">Buy now</button>
       
       <form method="post" action="{% url 'add_to_order' item.id %}" style="display: inline;">
         {% csrf_token %}
         <input type="hidden" name="quantity" value="1">
-        <button type="submit" class="add-to-order-button">Добавить в заказ</button>
+        <button type="submit" class="add-to-order-button">Add to order</button>
       </form>
     </div>
 
