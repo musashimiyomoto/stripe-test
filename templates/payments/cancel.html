@@ -1,11 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Cancelled</title>
-</head>
-<body>
-    <h1>Payment Cancelled</h1>
-    <p>Your payment was cancelled.</p>
-    <a href="/">Go to Home</a>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Оплата отменена{% endblock %}
+
+{% block content %}
+<style>
+  .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; text-align: center; }
+  .cancel-icon { font-size: 4rem; color: #dc3545; margin-bottom: 20px; }
+  .cancel-message { font-size: 1.5rem; color: #333; margin-bottom: 20px; }
+  .cancel-description { color: #666; margin-bottom: 30px; }
+  .btn { padding: 12px 24px; background: #007cba; color: white; text-decoration: none; border-radius: 4px; margin: 0 10px; }
+  .btn:hover { background: #005a8b; }
+</style>
+
+<div class="container">
+  <div class="cancel-icon">❌</div>
+  <h1 class="cancel-message">Оплата отменена</h1>
+  <p class="cancel-description">
+    Ваш платеж был отменен. Никакие средства не были списаны.
+    Вы можете попробовать еще раз или выбрать другие товары.
+  </p>
+  <div>
+    <a href="{% url 'item_list' %}" class="btn">Вернуться к покупкам</a>
+    <a href="{% url 'order_list' %}" class="btn">Мои заказы</a>
+  </div>
+</div>
+{% endblock %}

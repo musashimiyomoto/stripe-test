@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+{% block title %}Мои заказы{% endblock %}
+
+{% block content %}
+<style>
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .header { text-align: center; margin-bottom: 40px; }
+  .nav-links { margin-bottom: 30px; text-align: center; }
+  .nav-links a { margin: 0 15px; padding: 10px 20px; background: #007cba; color: white; text-decoration: none; border-radius: 4px; }
+  .orders-list { display: flex; flex-direction: column; gap: 20px; }
+  .order-card { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  .order-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+  .order-id { font-size: 1.2em; font-weight: bold; color: #333; }
+  .order-date { color: #666; }
+  .order-items { margin-bottom: 15px; }
+  .order-item { padding: 8px 0; border-bottom: 1px solid #eee; }
+  .order-item:last-child { border-bottom: none; }
+  .order-total { font-size: 1.1em; font-weight: bold; color: #007cba; margin-bottom: 15px; }
+  .order-actions { display: flex; gap: 10px; }
+  .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; text-align: center; font-size: 14px; }
+  .btn-primary { background: #007cba; color: white; }
+  .btn-success { background: #28a745; color: white; }
+  .empty-state { text-align: center; padding: 60px 20px; color: #666; }
+  .current-order { border: 2px solid #28a745; background: #f8fff9; }
+</style>
+
+<div class="container">
+  <div class="header">
+    <h1>Мои заказы</h1>
+    <p>Управляйте своими заказами</p>
+  </div>
+
+  <div class="nav-links">
+    <a href="{% url 'item_list' %}">← Каталог товаров</a>
+  </div>
+
+  {% if orders %}
+    <div class="orders-list">
+      {% for order in orders %}
+        <div class="order-card {% if order.id == request.session.order_id %}current-order{% endif %}">
+          <div class="order-header">
+            <div class="order-id">Заказ #{{ order.id }}</div>
+            <div class="order-date">{{ order.created_at|date:"d.m.Y H:i" }}</div>
+          </div>
+          
+          <div class="order-items">
+            <strong>Товары:</strong>
+            {% for order_item in order.orderitem_set.all %}
+              <div class="order-item">
+                {{ order_item.quantity }} x {{ order_item.item.name }} - {{ order_item.get_total_price }} {{ order_item.item.currency|upper }}
+              </div>
+            {% empty %}
+              <div class="order-item">Заказ пуст</div>
+            {% endfor %}
+          </div>
+
+          {% if order.discount %}
+            <div><strong>Скидка:</strong> {{ order.discount }}</div>
+          {% endif %}
+          
+          {% if order.tax %}
+            <div><strong>Налог:</strong> {{ order.tax }}</div>
+          {% endif %}
+
+          <div class="order-total">
+            Итого: {{ order.get_total_amount }} {{ order.get_currency|upper }}
+          </div>
+
+          <div class="order-actions">
+            <a href="{% url 'order_detail' order.pk %}" class="btn btn-primary">Подробнее</a>
+            {% if order.orderitem_set.exists %}
+              <button onclick="buyOrder({{ order.id }})" class="btn btn-success">Оплатить заказ</button>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <h3>У вас пока нет заказов</h3>
+      <p>Добавьте товары в заказ из каталога</p>
+      <a href="{% url 'item_list' %}" class="btn btn-primary">Перейти к каталогу</a>
+    </div>
+  {% endif %}
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+function buyOrder(orderId) {
+  fetch(`/buy-order/${orderId}/`, {method: 'GET'})
+  .then(response => {
+    if (!response.ok) {
+      return response.json().then(err => { throw new Error(err.error); });
+    }
+    return response.json();
+  })
+  .then(session => {
+    // Получаем первый товар для определения валюты и ключа Stripe
+    const stripe = Stripe('{{ STRIPE_PUBLISHABLE_KEY|default:"pk_test_..." }}');
+    return stripe.redirectToCheckout({ sessionId: session.id });
+  })
+  .then(result => {
+    if (result.error) {
+      alert(result.error.message);
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Произошла ошибка при оформлении заказа.');
+  });
+}
+</script>
+{% endblock %} 

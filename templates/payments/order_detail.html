@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block title %}Заказ #{{ order.id }}{% endblock %}
+
+{% block content %}
+<style>
+  .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+  .header { text-align: center; margin-bottom: 40px; }
+  .nav-links { margin-bottom: 30px; }
+  .nav-links a { margin-right: 15px; padding: 8px 16px; background: #007cba; color: white; text-decoration: none; border-radius: 4px; }
+  .order-info { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+  .order-items { background: white; border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
+  .item-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #eee; }
+  .item-row:last-child { border-bottom: none; }
+  .item-info { flex: 1; }
+  .item-name { font-weight: bold; margin-bottom: 5px; }
+  .item-description { color: #666; font-size: 0.9em; }
+  .item-quantity { margin: 0 20px; font-weight: bold; }
+  .item-price { font-weight: bold; color: #007cba; }
+  .order-summary { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .summary-row.total { font-size: 1.2em; font-weight: bold; border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px; }
+  .btn { padding: 12px 24px; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; text-align: center; font-size: 16px; }
+  .btn-success { background: #28a745; color: white; }
+  .btn-primary { background: #007cba; color: white; }
+  .actions { text-align: center; }
+</style>
+
+<div class="container">
+  <div class="nav-links">
+    <a href="{% url 'item_list' %}">← Каталог</a>
+    <a href="{% url 'order_list' %}">Все заказы</a>
+  </div>
+
+  <div class="header">
+    <h1>Заказ #{{ order.id }}</h1>
+    <p>Создан: {{ order.created_at|date:"d.m.Y в H:i" }}</p>
+  </div>
+
+  <div class="order-items">
+    <h3>Товары в заказе:</h3>
+    {% for order_item in order.orderitem_set.all %}
+      <div class="item-row">
+        <div class="item-info">
+          <div class="item-name">{{ order_item.item.name }}</div>
+          <div class="item-description">{{ order_item.item.description }}</div>
+        </div>
+        <div class="item-quantity">{{ order_item.quantity }} шт.</div>
+        <div class="item-price">{{ order_item.get_total_price }} {{ order_item.item.currency|upper }}</div>
+      </div>
+    {% empty %}
+      <p>Заказ пуст</p>
+    {% endfor %}
+  </div>
+
+  <div class="order-summary">
+    <h3>Итоги заказа:</h3>
+    
+    {% with subtotal=order.orderitem_set.all|length %}
+      <div class="summary-row">
+        <span>Подытог:</span>
+        <span>
+          {% for order_item in order.orderitem_set.all %}
+            {% if forloop.first %}{{ order_item.get_total_price }}{% endif %}
+          {% endfor %}
+          {% for order_item in order.orderitem_set.all %}
+            {% if not forloop.first %}+ {{ order_item.get_total_price }}{% endif %}
+          {% endfor %}
+          {{ order.get_currency|upper }}
+        </span>
+      </div>
+    {% endwith %}
+
+    {% if order.discount %}
+      <div class="summary-row">
+        <span>Скидка ({{ order.discount.name }}):</span>
+        <span>-{{ order.discount.percent }}%</span>
+      </div>
+    {% endif %}
+
+    {% if order.tax %}
+      <div class="summary-row">
+        <span>Налог ({{ order.tax.name }}):</span>
+        <span>+{{ order.tax.percent }}%</span>
+      </div>
+    {% endif %}
+
+    <div class="summary-row total">
+      <span>Итого к оплате:</span>
+      <span>{{ order.get_total_amount }} {{ order.get_currency|upper }}</span>
+    </div>
+  </div>
+
+  {% if order.orderitem_set.exists %}
+    <div class="actions">
+      <button id="buy-order-button" class="btn btn-success">Оплатить заказ</button>
+    </div>
+  {% endif %}
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script type="text/javascript">
+  var stripe = Stripe('{{ STRIPE_PUBLISHABLE_KEY }}');
+  var buyOrderButton = document.getElementById('buy-order-button');
+  
+  if (buyOrderButton) {
+    buyOrderButton.addEventListener('click', function() {
+      fetch('/buy-order/{{ order.id }}/', {method: 'GET'})
+      .then(response => {
+        if (!response.ok) {
+          return response.json().then(err => { throw new Error(err.error); });
+        }
+        return response.json();
+      })
+      .then(session => {
+        return stripe.redirectToCheckout({ sessionId: session.id });
+      })
+      .then(result => {
+        if (result.error) {
+          alert(result.error.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Произошла ошибка при оформлении заказа.');
+      });
+    });
+  }
+</script>
+{% endblock %} 

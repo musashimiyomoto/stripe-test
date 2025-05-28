@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-r&1l&sg)uxhknw1g!iri#fc#u8msk@1zk-kob3==#+%34yr_%^"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG").lower() == "true"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS").split(",")
 
 
 # Application definition
@@ -129,8 +129,13 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Stripe
-
+# Stripe settings
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY")
-
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY")
+
+# Stripe keys for different currencies (bonus feature)
+STRIPE_PUBLISHABLE_KEY_EUR = os.environ.get("STRIPE_PUBLISHABLE_KEY_EUR")
+STRIPE_SECRET_KEY_EUR = os.environ.get("STRIPE_SECRET_KEY_EUR")
+
+STRIPE_PUBLISHABLE_KEY_RUB = os.environ.get("STRIPE_PUBLISHABLE_KEY_RUB")
+STRIPE_SECRET_KEY_RUB = os.environ.get("STRIPE_SECRET_KEY_RUB")

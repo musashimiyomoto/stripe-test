@@ -1,11 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Success</title>
-</head>
-<body>
-    <h1>Payment Successful!</h1>
-    <p>Your payment was processed successfully.</p>
-    <a href="/">Go to Home</a>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Оплата прошла успешно{% endblock %}
+
+{% block content %}
+<style>
+  .container { max-width: 600px; margin: 0 auto; padding: 40px 20px; text-align: center; }
+  .success-icon { font-size: 4rem; color: #28a745; margin-bottom: 20px; }
+  .success-message { font-size: 1.5rem; color: #333; margin-bottom: 20px; }
+  .success-description { color: #666; margin-bottom: 30px; }
+  .btn { padding: 12px 24px; background: #007cba; color: white; text-decoration: none; border-radius: 4px; margin: 0 10px; }
+  .btn:hover { background: #005a8b; }
+</style>
+
+<div class="container">
+  <div class="success-icon">✅</div>
+  <h1 class="success-message">Оплата прошла успешно!</h1>
+  <p class="success-description">
+    Спасибо за покупку! Ваш платеж был успешно обработан.
+    Вы получите подтверждение на указанный email.
+  </p>
+  <div>
+    <a href="{% url 'item_list' %}" class="btn">Продолжить покупки</a>
+    <a href="{% url 'order_list' %}" class="btn">Мои заказы</a>
+  </div>
+</div>
+{% endblock %}
