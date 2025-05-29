@@ -12,6 +12,7 @@ django = "5.2"
 stripe = "12.1.0"
 psycopg = { extras = ["c"], version = "3.2.4" }
 gunicorn = { extras = ["gevent"], version = "23.0.0" }
+django-mathfilters = "1.0.0"
 
 [tool.poetry.group.dev]
 optional = true

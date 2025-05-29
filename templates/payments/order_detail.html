@@ -73,27 +73,15 @@
     {% load mathfilters %}
     {% with subtotal=0 %}
       {% for order_item in order.orderitem_set.all %}
-        {% with subtotal=subtotal|add:order_item.get_total_price %}{% endwith %}
+        {% with subtotal=subtotal|add:order_item.get_total_price %}
+          {% if forloop.last %}
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span>{{ subtotal }} {{ order.get_currency|upper }}</span>
+            </div>
+          {% endif %}
+        {% endwith %}
       {% endfor %}
-      <div class="summary-row">
-        <span>Subtotal:</span>
-        <span>
-          {% widthratio order.orderitem_set.all|length 1 0 as subtotal_calc %}
-          {% for order_item in order.orderitem_set.all %}
-            {% if forloop.first %}{{ order_item.get_total_price }}{% endif %}
-          {% endfor %}
-          {% for order_item in order.orderitem_set.all %}
-            {% if not forloop.first %} + {{ order_item.get_total_price }}{% endif %}
-          {% endfor %}
-          = 
-          {% for order_item in order.orderitem_set.all %}
-            {% if forloop.first %}{% with running_total=order_item.get_total_price %}{% endwith %}{% endif %}
-            {% if not forloop.first %}{% with running_total=running_total|add:order_item.get_total_price %}{% endwith %}{% endif %}
-            {% if forloop.last %}{{ running_total }}{% endif %}
-          {% endfor %}
-          {{ order.get_currency|upper }}
-        </span>
-      </div>
     {% endwith %}
 
     {% if preview_discount %}
