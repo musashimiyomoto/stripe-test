@@ -24,6 +24,8 @@
   .btn-success { background: #28a745; color: white; }
   .btn-primary { background: #007cba; color: white; }
   .actions { text-align: center; }
+  .auto-applied { color: #28a745; font-size: 0.9em; }
+  .preview-notice { background: #e7f3ff; border: 1px solid #b3d9ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
 </style>
 
 <div class="container">
@@ -36,6 +38,18 @@
     <h1>Order #{{ order.id }}</h1>
     <p>Created: {{ order.created_at|date:"d.m.Y в H:i" }}</p>
   </div>
+
+  {% if preview_tax or preview_discount %}
+  <div class="preview-notice">
+    <h4>🎯 Автоматически применится при оплате:</h4>
+    {% if preview_discount %}
+      <p>✅ <strong>Скидка:</strong> {{ preview_discount.name }} (-{{ preview_discount.percent }}%)</p>
+    {% endif %}
+    {% if preview_tax %}
+      <p>✅ <strong>Налог:</strong> {{ preview_tax.name }} (+{{ preview_tax.percent }}%)</p>
+    {% endif %}
+  </div>
+  {% endif %}
 
   <div class="order-items">
     <h3>Items in order:</h3>
@@ -56,29 +70,50 @@
   <div class="order-summary">
     <h3>Order summary:</h3>
     
-    {% with subtotal=order.orderitem_set.all|length %}
+    {% load mathfilters %}
+    {% with subtotal=0 %}
+      {% for order_item in order.orderitem_set.all %}
+        {% with subtotal=subtotal|add:order_item.get_total_price %}{% endwith %}
+      {% endfor %}
       <div class="summary-row">
         <span>Subtotal:</span>
         <span>
+          {% widthratio order.orderitem_set.all|length 1 0 as subtotal_calc %}
           {% for order_item in order.orderitem_set.all %}
             {% if forloop.first %}{{ order_item.get_total_price }}{% endif %}
           {% endfor %}
           {% for order_item in order.orderitem_set.all %}
-            {% if not forloop.first %}+ {{ order_item.get_total_price }}{% endif %}
+            {% if not forloop.first %} + {{ order_item.get_total_price }}{% endif %}
+          {% endfor %}
+          = 
+          {% for order_item in order.orderitem_set.all %}
+            {% if forloop.first %}{% with running_total=order_item.get_total_price %}{% endwith %}{% endif %}
+            {% if not forloop.first %}{% with running_total=running_total|add:order_item.get_total_price %}{% endwith %}{% endif %}
+            {% if forloop.last %}{{ running_total }}{% endif %}
           {% endfor %}
           {{ order.get_currency|upper }}
         </span>
       </div>
     {% endwith %}
 
-    {% if order.discount %}
+    {% if preview_discount %}
+      <div class="summary-row">
+        <span>Скидка ({{ preview_discount.name }}) <span class="auto-applied">автоматически</span>:</span>
+        <span>-{{ preview_discount.percent }}%</span>
+      </div>
+    {% elif order.discount %}
       <div class="summary-row">
         <span>Discount ({{ order.discount.name }}):</span>
         <span>-{{ order.discount.percent }}%</span>
       </div>
     {% endif %}
 
-    {% if order.tax %}
+    {% if preview_tax %}
+      <div class="summary-row">
+        <span>Налог ({{ preview_tax.name }}) <span class="auto-applied">автоматически</span>:</span>
+        <span>+{{ preview_tax.percent }}%</span>
+      </div>
+    {% elif order.tax %}
       <div class="summary-row">
         <span>Tax ({{ order.tax.name }}):</span>
         <span>+{{ order.tax.percent }}%</span>
@@ -87,13 +122,22 @@
 
     <div class="summary-row total">
       <span>Total to pay:</span>
-      <span>{{ order.get_total_amount }} {{ order.get_currency|upper }}</span>
+      <span>
+        {% if preview_total %}
+          {{ preview_total }} {{ order.get_currency|upper }}
+        {% else %}
+          {{ order.get_total_amount }} {{ order.get_currency|upper }}
+        {% endif %}
+      </span>
     </div>
   </div>
 
   {% if order.orderitem_set.exists %}
     <div class="actions">
       <button id="buy-order-button" class="btn btn-success">Pay order</button>
+      <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+        Налоги и скидки будут применены автоматически при оплате
+      </p>
     </div>
   {% endif %}
 </div>
