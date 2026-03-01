@@ -1,154 +1,178 @@
 # Stripe Test Shop
 
-Тестовое задание - Django + Stripe API интеграция для обработки платежей.
+Test Assignment – Django + Stripe API integration for payment processing.
 
-## Описание
+## Description
 
-Веб-приложение для продажи товаров с интеграцией Stripe для обработки платежей. Поддерживает:
+A web application for selling products with Stripe integration for payment processing. Supports:
 
-- Просмотр каталога товаров
-- Покупка отдельных товаров
-- Создание заказов из нескольких товаров
-- Поддержка скидок и налогов
-- Множественные валюты (USD, EUR, RUB)
-- Админ-панель для управления товарами
+* Product catalog browsing
+* Purchasing individual items
+* Creating orders with multiple items
+* Discounts and taxes support
+* Multiple currencies (USD, EUR, RUB)
+* Admin panel for product management
 
-## Функциональность
+## Functionality
 
-### Основные возможности:
-- ✅ Django модель Item с полями (name, description, price, currency)
-- ✅ API метод GET /buy/{id} для получения Stripe Session ID
-- ✅ API метод GET /item/{id} для отображения страницы товара
-- ✅ Stripe Checkout интеграция
-- ✅ Docker поддержка
-- ✅ Environment variables
-- ✅ Django Admin панель
+### Core Features:
 
-### Бонусные возможности:
-- ✅ Модель Order для объединения товаров
-- ✅ Модели Discount и Tax
-- ✅ Поддержка множественных валют
-- ✅ Красивый современный UI
-- ✅ Полная интеграция с Stripe
+* ✅ Django `Item` model with fields (name, description, price, currency)
+* ✅ `GET /buy/{id}` API endpoint to retrieve a Stripe Session ID
+* ✅ `GET /item/{id}` API endpoint to display a product page
+* ✅ Stripe Checkout integration
+* ✅ Docker support
+* ✅ Environment variables configuration
+* ✅ Django Admin panel
 
-## Технологии
+### Bonus Features:
 
-- Python 3.11
-- Django 5.2
-- Stripe API
-- PostgreSQL
-- Docker & Docker Compose
-- HTML/CSS/JavaScript
+* ✅ `Order` model for grouping items
+* ✅ `Discount` and `Tax` models
+* ✅ Multi-currency support
+* ✅ Modern, clean UI
+* ✅ Full Stripe integration
 
-## Установка и запуск
+## Technologies
 
-### Вариант 1: Docker (рекомендуется)
+* Python 3.11
+* Django 5.2
+* Stripe API
+* PostgreSQL
+* Docker & Docker Compose
+* HTML/CSS/JavaScript
 
-1. Клонируйте репозиторий:
+## Installation & Setup
+
+### Option 1: Docker (Recommended)
+
+1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd stripe-test
 ```
 
-2. Создайте файл `.env` на основе `.env.example`:
+2. Create a `.env` file based on `.env.example`:
+
 ```bash
 cp .env.example .env
 ```
 
-3. Заполните переменные окружения в `.env`:
+3. Fill in the environment variables in `.env`:
+
 ```env
-# Обязательные Stripe ключи
-STRIPE_PUBLISHABLE_KEY=pk_test_ваш_публичный_ключ
-STRIPE_SECRET_KEY=sk_test_ваш_секретный_ключ
+# Required Stripe keys
+STRIPE_PUBLISHABLE_KEY=pk_test_your_public_key
+STRIPE_SECRET_KEY=sk_test_your_secret_key
 ```
 
-4. Запустите приложение:
+4. Start the application:
+
 ```bash
 docker-compose up --build
 ```
 
-5. Выполните миграции:
+5. Run migrations:
+
 ```bash
 docker-compose exec web python manage.py migrate
 ```
 
-6. Создайте суперпользователя:
+6. Create a superuser:
+
 ```bash
 docker-compose exec web python manage.py createsuperuser
 ```
 
-7. Откройте браузер: http://localhost:8000
+7. Open in browser: [http://localhost:8000](http://localhost:8000)
 
-### Вариант 2: Локальная установка
+---
 
-1. Установите зависимости:
+### Option 2: Local Setup
+
+1. Install dependencies:
+
 ```bash
 pip install poetry
 poetry install
 ```
 
-2. Настройте PostgreSQL и создайте базу данных
+2. Configure PostgreSQL and create a database
 
-3. Создайте файл `.env` и заполните переменные
+3. Create a `.env` file and fill in environment variables
 
-4. Выполните миграции:
+4. Run migrations:
+
 ```bash
 poetry run python manage.py migrate
 ```
 
-5. Создайте суперпользователя:
+5. Create a superuser:
+
 ```bash
 poetry run python manage.py createsuperuser
 ```
 
-6. Запустите сервер:
+6. Start the server:
+
 ```bash
 poetry run python manage.py runserver
 ```
 
-## Использование
+---
 
-### Админ-панель
-- URL: http://localhost:8000/admin/
-- Добавьте товары, скидки и налоги через админку
+## Usage
+
+### Admin Panel
+
+* URL: [http://localhost:8000/admin/](http://localhost:8000/admin/)
+* Add products, discounts, and taxes via the admin interface
 
 ### API Endpoints
 
-- `GET /` - Каталог товаров
-- `GET /item/{id}/` - Страница товара с кнопкой покупки
-- `GET /buy/{id}/` - Создание Stripe сессии для товара
-- `GET /orders/` - Список заказов
-- `GET /order/{id}/` - Детали заказа
-- `GET /buy-order/{id}/` - Создание Stripe сессии для заказа
-- `POST /add-to-order/{item_id}/` - Добавление товара в заказ
+* `GET /` – Product catalog
+* `GET /item/{id}/` – Product page with purchase button
+* `GET /buy/{id}/` – Create Stripe session for a product
+* `GET /orders/` – List of orders
+* `GET /order/{id}/` – Order details
+* `GET /buy-order/{id}/` – Create Stripe session for an order
+* `POST /add-to-order/{item_id}/` – Add item to order
 
-### Тестирование платежей
+---
 
-Используйте тестовые карты Stripe:
-- Номер карты: `4242 4242 4242 4242`
-- Срок действия: любая будущая дата
-- CVC: любые 3 цифры
+## Payment Testing
 
-## Структура проекта
+Use Stripe test cards:
+
+* Card number: `4242 4242 4242 4242`
+* Expiration date: any future date
+* CVC: any 3 digits
+
+---
+
+## Project Structure
 
 ```
 stripe-test/
-├── core/                   # Основные настройки Django
-├── payments/              # Приложение для платежей
-│   ├── models.py         # Модели Item, Order, Discount, Tax
-│   ├── views.py          # Views для обработки запросов
-│   ├── admin.py          # Настройки админки
-│   └── urls.py           # URL маршруты
-├── templates/            # HTML шаблоны
-├── docker-compose.yml    # Docker конфигурация
-├── Dockerfile           # Docker образ
-├── pyproject.toml       # Зависимости Python
-└── README.md           # Документация
+├── core/                   # Main Django settings
+├── payments/               # Payments application
+│   ├── models.py           # Models: Item, Order, Discount, Tax
+│   ├── views.py            # Request handling views
+│   ├── admin.py            # Admin configuration
+│   └── urls.py             # URL routes
+├── templates/              # HTML templates
+├── docker-compose.yml      # Docker configuration
+├── Dockerfile              # Docker image
+├── pyproject.toml          # Python dependencies
+└── README.md               # Documentation
 ```
 
-## Переменные окружения
+---
 
-Основные переменные в `.env`:
+## Environment Variables
+
+Main variables in `.env`:
 
 ```env
 # Django
@@ -167,44 +191,56 @@ DATABASE_PORT=5432
 STRIPE_PUBLISHABLE_KEY=pk_test_...
 STRIPE_SECRET_KEY=sk_test_...
 
-# Stripe EUR (опционально)
+# Stripe EUR (optional)
 STRIPE_PUBLISHABLE_KEY_EUR=pk_test_...
 STRIPE_SECRET_KEY_EUR=sk_test_...
 
-# Stripe RUB (опционально)
+# Stripe RUB (optional)
 STRIPE_PUBLISHABLE_KEY_RUB=pk_test_...
 STRIPE_SECRET_KEY_RUB=sk_test_...
 ```
 
-## Особенности реализации
+---
 
-### Множественные валюты
-Приложение поддерживает разные валюты через отдельные Stripe аккаунты. Для каждой валюты можно настроить свои ключи.
+## Implementation Details
 
-### Заказы
-Пользователи могут добавлять товары в заказ и оплачивать их одной транзакцией. Заказы сохраняются в сессии.
+### Multiple Currencies
 
-### Скидки и налоги
-Поддерживаются через Stripe Coupons и Tax Rates API.
+The application supports multiple currencies using separate Stripe accounts. Each currency can have its own API keys.
 
-## Разработка
+### Orders
 
-### Создание миграций
+Users can add multiple items to an order and pay in a single transaction. Orders are stored in the session.
+
+### Discounts and Taxes
+
+Implemented using Stripe Coupons and Tax Rates API.
+
+---
+
+## Development
+
+### Creating Migrations
+
 ```bash
 docker-compose exec web python manage.py makemigrations
 docker-compose exec web python manage.py migrate
 ```
 
-### Сбор статических файлов
+### Collecting Static Files
+
 ```bash
 docker-compose exec web python manage.py collectstatic
 ```
 
-### Логи
+### Logs
+
 ```bash
 docker-compose logs web
 ```
 
-## Лицензия
+---
 
-Тестовое задание для демонстрации навыков разработки.
+## License
+
+Test assignment created to demonstrate development skills.
